@@ -15,13 +15,15 @@ const productSlice = createSlice({
     items: [],
     filteredItems: [],
     searchQuery: "",
-    status: "idle",
+    currentPage: 1, // Pagination ke liye current page
+    itemsPerPage: 8, // Har page par kitne items show hon
     loading: false,
     error: null,
   },
   reducers: {
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+      
       if (action.payload === "") {
         state.filteredItems = state.items;
       } else {
@@ -29,27 +31,30 @@ const productSlice = createSlice({
           product.title.toLowerCase().includes(action.payload.toLowerCase())
         );
       }
+
+      // Jab search ho to page wapas 1 par le aayen
+      state.currentPage = 1;
+    },
+    setCurrentPage: (state, action) => {
+      state.currentPage = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
-        state.status = "loading";
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.status = "succeeded";
         state.items = action.payload;
         state.filteredItems = action.payload; 
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.status = "failed";
         state.error = action.error.message;
       });
   },
 });
 
-export const { setSearchQuery } = productSlice.actions;
+export const { setSearchQuery, setCurrentPage } = productSlice.actions;
 export default productSlice.reducer;
