@@ -2,10 +2,13 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { addItem } from "../store/cartSlice";
+import { setSearchQuery } from "../store/productSlice";
 
 const Products = () => {
   const dispatch = useDispatch();
-  const { items, loading, error } = useSelector((state) => state.products);
+  const { filteredItems, loading, error } = useSelector(
+    (state) => state.products
+  );
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -21,12 +24,18 @@ const Products = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <input
+        type="text"
+        placeholder="Search Products..."
+        onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+        className="border p-2 rounded w-full"
+      />
       <h2 className="text-4xl font-extrabold text-center mb-8 text-gray-900">
         🔥 Trending Products
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {items.map((product) => (
+        {filteredItems.map((product) => (
           <div
             key={product.id}
             className="bg-gradient-to-br shadow-xl rounded-2xl p-6 flex flex-col items-center transition-transform transform hover:-translate-y-2 hover:shadow-2xl"
